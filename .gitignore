@@ -1,0 +1,10 @@
+venv
+*.pdf
+*.mobi
+*.epub
+*.html
+data/
+build/
+.env
+.DS_Store
+__pycache__/

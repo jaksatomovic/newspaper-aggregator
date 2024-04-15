@@ -1,0 +1,7 @@
+name,site_url,country,rss_url,language
+24sata,https://www.24sata.hr,croatia,https://www.24sata.hr/feeds/news.xml,hr
+dnevnik,https://dnevnik.hr,croatia,https://dnevnik.hr/rss,hr
+net,https://net.hr,croatia,https://net.hr/feed,hr
+index,https://www.index.hr,croatia,https://www.index.hr/rss/vijesti,hr
+slobodna dalmacija,https://slobodnadalmacija.hr,croatia,https://slobodnadalmacija.hr/feed/category/119,hr
+new york times,https://rss.nytimes.com,usa,https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml,en

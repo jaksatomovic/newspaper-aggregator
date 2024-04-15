@@ -1,0 +1,9 @@
+newspaper4k
+requests
+textblob
+python-dotenv
+ebooklib
+mysql-connector-python
+Alembic
+lxml_html_clean
+weasyprint
