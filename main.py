@@ -24,7 +24,6 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 class Main:
     def __init__(self):
-        notification.send_alert("START", "<h1>Scraping successful!</h1>")
         # Load environment variables from .env file
         load_dotenv()
         self.db_manager = DatabaseManager.get_instance()

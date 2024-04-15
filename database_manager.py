@@ -71,11 +71,11 @@ class DatabaseManager:
                         file_data LONGBLOB NOT NULL,
                         journal_id INT NOT NULL,
                         scraping_date VARCHAR(50) NOT NULL,
-                        FOREIGN KEY (journal_id) REFERENCES journals(id),
                         UNIQUE KEY (title, file_name, journal_id, newspaper_date, scraping_date) -- Unique constraint on these columns
                     )
                 """
                 cursor.execute(create_table_query)
+                
                 print("Table 'newspapers' created successfully.")
 
             if not journals_table_exists:
