@@ -14,7 +14,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy your script into the container at /app
-COPY main.py .
+COPY . /app
+
 
 # Copy the cron job file into the container at /etc/cron.d/cronjob
 COPY cronjob /etc/cron.d/cronjob
