@@ -30,51 +30,38 @@ class Main:
 
         # Setup project
         self.db_manager.connect()
-        self.db_manager.create_tables()
+        database_ok = self.db_manager.check_database()
         self.db_manager.disconnect()
+
+        if not database_ok:
+            print("Database is not set!")
+            return
+
         utility.build_folder_structure()
 
     def run(self):
         # Perform operations here
         print("Main class is running")
 
-        self.load_journals()
-
         self.db_manager.connect()
         journals = self.db_manager.get_journals()
         self.db_manager.disconnect()
         
         for journal in journals:
-            site_url = journal['site_url']
-            rss_url = journal['rss_url']
-            language = journal['language']
+            # Call spider.get_news with the fetched data  
+            spider.get_news(journal, self.db_manager)          
 
-            # Call spider.get_news with the fetched data
-            spider.get_news(site_url, rss_url, language)                
-
-        self.process_files()
-        self.store_files()
-        utility.delete_all_files(constants.data_folder_path)
-        notification.send_alert("INK", "<h1>Scraping successful!</h1>")
+        # self.process_files()
+        # self.store_files()
+        # utility.delete_all_files(constants.build_folder_path)
+        # notification.send_alert("INK", "<h1>Scraping successful!</h1>")
+         
+        # self.db_manager.connect()
+        # self.db_manager.execute_query(''' DROP TABLE temp_data ''')
+        # self.db_manager.disconnect()
 
     def process_files(self):
         render.generate()
-
-    def load_journals(self):
-        self.db_manager.connect()
-        with open('input/init.csv', 'r', newline='', encoding='utf-8') as csvfile:
-            csv_reader = csv.DictReader(csvfile)
-            for row in csv_reader:
-                journal_data = {
-                    'name': row['name'],
-                    'site_url': row['site_url'],
-                    'country': row['country'],
-                    'rss_url': row['rss_url'],
-                    'language': row['language']
-                }
-                print(journal_data)
-                self.db_manager.insert_journal(journal_data)
-        self.db_manager.disconnect()
 
     def store_files(self):
         epub_files, pdf_files = utility.get_files_by_extension('build/')  
