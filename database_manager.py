@@ -209,28 +209,31 @@ class DatabaseManager:
 
             # Insert or update the newspaper
             insert_query = """
-                INSERT INTO newspapers 
-                (title, subtitle, newspaper_date, category_id, file_name, file_data, journal_id, scraping_date)
+                INSERT INTO newspaper 
+                (title, newspaper_date, file_name, file_data, file_data_content_type, epub_file, epub_file_content_type, journal_id)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 ON DUPLICATE KEY UPDATE
-                subtitle = VALUES(subtitle),
                 newspaper_date = VALUES(newspaper_date),
-                category_id = VALUES(category_id),
                 file_name = VALUES(file_name),
                 file_data = VALUES(file_data),
-                journal_id = VALUES(journal_id),
-                scraping_date = VALUES(scraping_date)
+                file_data_content_type = VALUES(file_data_content_type),
+                epub_file = VALUES(epub_file),
+                epub_file_content_type = VALUES(epub_file_content_type),
+                journal_id = VALUES(journal_id)
             """
+
+                    # id	title	newspaper_date	file_name	file_data	file_data_content_type	epub_file	epub_file_content_type	journal_id	
+
         
             cursor.execute(insert_query, (
                 newspaper['title'],
-                newspaper['subtitle'],
                 newspaper['newspaper_date'],
-                newspaper['category_id'],
                 newspaper['file_name'],
                 newspaper['file_data'],
-                newspaper['journal_id'],
-                newspaper['scraping_date']
+                newspaper['file_data_content_type'],
+                newspaper['epub_file'],
+                newspaper['epub_file_content_type'],
+                newspaper['journal_id']
             ))
             self._connection.commit()
             print("Newspaper " + newspaper['title'] + " inserted or updated successfully.")

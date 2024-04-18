@@ -57,7 +57,7 @@ class Main:
         self.db_manager.execute_query(''' DROP TABLE temp_data ''')
         self.db_manager.disconnect()
 
-        # self.store_files()
+        self.store_files()
         utility.delete_all_files(constants.build_folder_path)
         # notification.send_alert("INK", "<h1>Scraping successful!</h1>")
 
@@ -71,18 +71,21 @@ class Main:
 
         # id	title	newspaper_date	file_name	file_data	file_data_content_type	epub_file	epub_file_content_type	journal_id	
 
+        self.db_manager.connect()    
 
-        self.db_manager.connect()        
+        formatted_date = today.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+     
         for file_name, file_data in file_data:
             newspaper = {
-                'title': file_name.split('.')[0],
-                'newspaper_date': today.strftime("%d/%m/%Y"),
+                'journal_id': 1,
+                'title': file_name,
+                'newspaper_date': formatted_date,
                 'file_name': file_name,
-                'file_data_content_type': file_data,
-                'epub_file': file_name,
-                'epub_file_content_type': file_data,
-                'journal_id': 1
-            }
+                'file_data': file_data,
+                'file_data_content_type': "pdf",
+                'epub_file': file_data,
+                'epub_file_content_type': "epub"
+            }  
             self.db_manager.create_newspaper(newspaper)
 
         self.db_manager.disconnect()
