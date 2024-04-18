@@ -6,6 +6,7 @@ import utility
 import constants
 import ebooklib
 import os
+from collections import defaultdict
 
 from ebooklib import epub
 
@@ -16,52 +17,87 @@ today = datetime.date.today()
 # formatted_date = today.strftime('%d. %B %Y')
 
 
-def generate():
+def generate(db_manager):
 
-    csv_files = utility.list_csv_files(constants.data_folder_path)
+    db_manager.connect()
+    sql_result = db_manager.get_temporary_data()
+    db_manager.disconnect()
 
-    if not csv_files:
-        print("Array is empty. exiting scritp")
-        return
+    # Dictionary to hold arrays based on journal_id
+    result_dict = defaultdict(list)
 
-    ebooklib.DEFAULT_IGNORE_NCX = False
+    # Splitting the result set
+    for row in sql_result:
+        result_dict[row['journal_id']].append(row)
+
+    # Converting defaultdict to regular dictionary
+    result_dict = dict(result_dict)
+
+    # Accessing arrays with same journal_id
+    for journal_id, articles in result_dict.items():
+        print(f'Procesing articles for Journal ID: {journal_id}')
 
     # Process each CSV file
-    for csv_file in csv_files:
-        print("Processing CSV file:", csv_file)
+    # for csv_file in csv_files:
+        # print("Processing CSV file:", csv_file)
         
-        newspaper_title = ""
-        newspaper_description = ""
+        db_manager.connect()
+        sql_name_result = db_manager.get_journal_name(journal_id)
+        db_manager.disconnect()
+
+        newspaper_title = sql_name_result[0]['journal_name']
+
+        print(newspaper_title)
+
+        # # Read data from CSV file and populate articles array
+        # articles = []
+        # with open(csv_file, 'r', newline='', encoding='utf-8') as csvfile:
+        #     csv_reader = csv.DictReader(csvfile)
+        #     for row in csv_reader:
+        #         article = {
+        #             'source': row['source'],
+        #             'description': row['description'],
+        #             'image_url': row['image'],
+        #             'title': row['title'],
+        #             'content': row['content']
+        #         }
+        #         articles.append(article)          
+
+        filtered_array = []
         newspaper_content = ""
-
-        # Read data from CSV file and populate articles array
-        articles = []
-        with open(csv_file, 'r', newline='', encoding='utf-8') as csvfile:
-            csv_reader = csv.DictReader(csvfile)
-            for row in csv_reader:
-                article = {
-                    'source': row['source'],
-                    'description': row['description'],
-                    'image_url': row['image'],
-                    'title': row['title'],
-                    'content': row['content']
-                }
-                articles.append(article)          
-
         for article in articles:
 
-            newspaper_title = article['source']
-            # newspaper_description = article['description']
-       
-            article_content = article['content']
-            part1, part2, part3 = utility.split_article(article_content)
-            
-            newspaper_content += f"""
-            <h1>{article['title']}</h1>
-            <p>{part1}</p>
-            <p>{part2}</p>
-            <p>{part3}</p>            
-            """
+            if article['category_id'] == 1:
+                article_content = article['content']
+                part1, part2, part3 = utility.split_article(article_content)
+                
+                newspaper_content += f"""
+                <h1>{article['title']}</h1>
+                <p>{part1}</p>
+                <p>{part2}</p>
+                <p>{part3}</p>            
+                """
+            else:
+                filtered_array.append(article)
+
+        newspaper_content += f"""</section>
+            <hr />
+            <div class="date">SPORT</div>
+            <hr />
+            <section>
+        """
+        
+        for article in filtered_array:
+            if article['category_id'] == 5:
+                article_content = article['content']
+                part1, part2, part3 = utility.split_article(article_content)
+                
+                newspaper_content += f"""
+                <h1>{article['title']}</h1>
+                <p>{part1}</p>
+                <p>{part2}</p>
+                <p>{part3}</p>            
+                """
 
         # <img src="{article['image_url']}" alt="image" />
         # now we have newspaper content and we can create ebook

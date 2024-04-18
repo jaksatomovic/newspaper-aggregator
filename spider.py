@@ -6,7 +6,6 @@ import re
 
 from newspaper import Config
 from newspaper.mthreading import fetch_news
-from constants import csv_extension, data_folder_path
 
 # Define content types for video files
 ignore_defaults = {
@@ -58,8 +57,6 @@ def get_news(journal, db_manager):
 
     today = datetime.date.today()
     yesterday = today - datetime.timedelta(days=1)
-
-    csv_file_path = data_folder_path + brand + csv_extension
 
     article_urls = []
     for entry in feed.entries:

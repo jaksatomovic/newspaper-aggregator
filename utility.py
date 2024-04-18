@@ -4,8 +4,6 @@ import random
 import re
 
 def build_folder_structure():
-    if not os.path.exists(constants.data_folder_path):
-        os.makedirs(constants.data_folder_path)
     if not os.path.exists(constants.build_folder_path):
         os.makedirs(constants.build_folder_path)
 

@@ -99,7 +99,7 @@ class DatabaseManager:
             else:
                 cursor.execute(query)
             self._connection.commit()
-            print("Query executed successfully.")
+            # print("Query executed successfully.")
         except mysql.connector.Error as e:
             print(f"Error occurred while executing query: {e}")
             self._connection.rollback()
@@ -114,6 +114,36 @@ class DatabaseManager:
 
         try:
             cursor.execute("SELECT j.id AS journal_id, j.name AS journal_name, j.site_url, j.language, j.country, j.image, j.image_content_type, f.rss_url, f.category_id FROM journal j LEFT JOIN feed f ON j.id = f.journal_id")
+            return cursor.fetchall()
+        except mysql.connector.Error as e:
+            print(f"Error occurred while executing query: {e}")
+            self._connection.rollback()
+        finally:
+            cursor.close()
+
+    def get_temporary_data(self):
+        if self._connection is None:
+            raise Exception("Database connection is not established")
+
+        cursor = self._connection.cursor(dictionary=True)
+
+        try:
+            cursor.execute("SELECT journal_id, category_id, title, content, image_url FROM temp_data")
+            return cursor.fetchall()
+        except mysql.connector.Error as e:
+            print(f"Error occurred while executing query: {e}")
+            self._connection.rollback()
+        finally:
+            cursor.close()
+
+    def get_journal_name(self, journal_id):
+        if self._connection is None:
+            raise Exception("Database connection is not established")
+
+        cursor = self._connection.cursor(dictionary=True)
+
+        try:
+            cursor.execute(''' SELECT j.name AS journal_name FROM journal j WHERE j.id =  ''' + str(journal_id))
             return cursor.fetchall()
         except mysql.connector.Error as e:
             print(f"Error occurred while executing query: {e}")
