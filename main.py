@@ -59,33 +59,48 @@ class Main:
 
         self.store_files()
         utility.delete_all_files(constants.build_folder_path)
-        # notification.send_alert("INK", "<h1>Scraping successful!</h1>")
+        notification.send_alert("INK", "<h1>Scraping successful!</h1>")
 
     def process_files(self):
         render.generate(self.db_manager)
 
+    # Function to detect content type based on file extension
+    def detect_content_type(self, file_path):
+        _, file_extension = os.path.splitext(file_path)
+        if file_extension.lower() == '.pdf':
+            return "application/pdf"
+        elif file_extension.lower() == '.epub':
+            return "application/epub+zip"
+        else:
+            return "unknown"  # Or handle other content types as needed
+
+
     def store_files(self):
         epub_files, pdf_files = utility.get_files_by_extension('build/')  
         # Merge epub_data and pdf_data into one list
-        file_data = [(os.path.basename(file), open(file, 'rb').read()) for file in epub_files + pdf_files]
+        file_data = [(os.path.basename(file), open(file, 'rb').read(), self.detect_content_type(file)) for file in pdf_files + epub_files]
 
-        # id	title	newspaper_date	file_name	file_data	file_data_content_type	epub_file	epub_file_content_type	journal_id	
+        # Separate PDF files and EPUB files based on content type
+        pdf_files = [(file_name, file_data) for file_name, file_data, content_type in file_data if content_type == 'application/pdf']
+        epub_files = [(file_name, file_data) for file_name, file_data, content_type in file_data if content_type == 'application/epub+zip']
 
         self.db_manager.connect()    
 
         formatted_date = today.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
-     
-        for file_name, file_data in file_data:
+
+        # Map PDF file data to file_data and EPUB file data to epub_file
+        for file_name, file_data, content_type in file_data:
             newspaper = {
-                'journal_id': 1,
-                'title': file_name,
+                'journal_id': int(file_name.split(".")[0]),
+                'title': None,
                 'newspaper_date': formatted_date,
                 'file_name': file_name,
-                'file_data': file_data,
-                'file_data_content_type': "pdf",
-                'epub_file': file_data,
-                'epub_file_content_type': "epub"
-            }  
+                'file_data': file_data if content_type == 'application/pdf' else None,
+                'file_data_content_type': 'application/pdf' if content_type == 'application/pdf' else None,
+                'epub_file': file_data if content_type == 'application/epub+zip' else None,
+                'epub_file_content_type': 'application/epub+zip' if content_type == 'application/epub+zip' else None
+            }
+
             self.db_manager.create_newspaper(newspaper)
 
         self.db_manager.disconnect()

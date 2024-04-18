@@ -80,12 +80,13 @@ def generate(db_manager):
             else:
                 filtered_array.append(article)
 
-        newspaper_content += f"""</section>
-            <hr />
-            <div class="date">SPORT</div>
-            <hr />
-            <section>
-        """
+        if filtered_array:
+            newspaper_content += f"""</section>
+                <hr />
+                <div class="date">SPORT</div>
+                <hr />
+                <section>
+            """
         
         for article in filtered_array:
             if article['category_id'] == 5:
@@ -198,7 +199,7 @@ def generate(db_manager):
 
 
         # create epub file
-        epub.write_epub(constants.build_folder_path + newspaper_title + '.epub', book, {})
+        epub.write_epub(constants.build_folder_path + str(journal_id) + '.epub', book, {})
 
         # create pdf file
-        pdf_converter.epub_to_pdf(constants.build_folder_path + newspaper_title + '.epub', constants.build_folder_path + newspaper_title + '.pdf')
+        pdf_converter.epub_to_pdf(constants.build_folder_path + str(journal_id) + '.epub', constants.build_folder_path + str(journal_id) + '.pdf')

@@ -236,7 +236,6 @@ class DatabaseManager:
                 newspaper['journal_id']
             ))
             self._connection.commit()
-            print("Newspaper " + newspaper['title'] + " inserted or updated successfully.")
         except mysql.connector.Error as e:
             print(f"Error occurred while inserting newspapaer: {e}")
             self._connection.rollback()
