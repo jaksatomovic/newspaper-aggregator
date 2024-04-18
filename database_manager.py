@@ -215,9 +215,7 @@ class DatabaseManager:
                 ON DUPLICATE KEY UPDATE
                 newspaper_date = VALUES(newspaper_date),
                 file_name = VALUES(file_name),
-                file_data = VALUES(file_data),
                 file_data_content_type = VALUES(file_data_content_type),
-                epub_file = VALUES(epub_file),
                 epub_file_content_type = VALUES(epub_file_content_type),
                 journal_id = VALUES(journal_id)
             """
