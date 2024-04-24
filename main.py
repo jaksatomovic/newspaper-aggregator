@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import csv
 import spider
 import render
@@ -125,7 +124,7 @@ class Main:
 
 if __name__ == "__main__":
     scheduler = BlockingScheduler()
-    scheduler.add_job(job_function, 'interval', minutes=5)
+    scheduler.add_job(job_function, 'cron', hour=1)
     
     # Register signal handler for termination signal (SIGTERM)
     signal.signal(signal.SIGTERM, stop_scheduler)
