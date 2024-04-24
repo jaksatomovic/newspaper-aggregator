@@ -8,9 +8,7 @@ import constants
 import notification
 import logging
 import signal
-import uvicorn
 
-from app import app
 from dotenv import load_dotenv
 from database_manager import DatabaseManager
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -125,7 +123,6 @@ class Main:
         self.db_manager.disconnect()
 
 if __name__ == "__main__":
-    uvicorn.run("app:app", host="0.0.0.0", port=5000, reload=True)
     
     scheduler = BlockingScheduler()
     scheduler.add_job(job_function, 'cron', hour=1)
