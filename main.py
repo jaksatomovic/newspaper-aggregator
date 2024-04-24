@@ -9,6 +9,7 @@ import constants
 import notification
 import logging
 import sys
+from pathlib import Path
 
 # Configure logging to write to STDOUT
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
@@ -25,7 +26,8 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 class Main:
     def __init__(self):
         # Load environment variables from .env file
-        load_dotenv()
+        env_path = Path('.') / '.env'
+        load_dotenv(dotenv_path=env_path)
         self.db_manager = DatabaseManager.get_instance()
 
         # Setup project
