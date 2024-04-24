@@ -8,3 +8,5 @@ Alembic
 lxml_html_clean
 weasyprint
 apscheduler
+uvicorn
+Flask
