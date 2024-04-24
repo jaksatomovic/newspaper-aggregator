@@ -8,12 +8,39 @@ import datetime
 import constants
 import notification
 import logging
+import signal
+
 from dotenv import load_dotenv
 from database_manager import DatabaseManager
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 today = datetime.date.today()
 
+def job_function():
+    # Instantiate and run the main class
+    main = Main().get_instance()
+    main.run()
+
+def stop_scheduler(signum, frame):
+    print("Received termination signal. Stopping scheduler.")
+    scheduler.shutdown()
+
 class Main:
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance._connection = None
+        return cls._instance
+    
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
+
+    
     def __init__(self):
         # Load environment variables from .env file
         load_dotenv()
@@ -97,8 +124,15 @@ class Main:
         self.db_manager.disconnect()
 
 if __name__ == "__main__":
-    # Instantiate and run the main class
-    main = Main()
-    main.run()
+    scheduler = BlockingScheduler()
+    scheduler.add_job(job_function, 'interval', minutes=5)
+    
+    # Register signal handler for termination signal (SIGTERM)
+    signal.signal(signal.SIGTERM, stop_scheduler)
+    
+    try:
+        scheduler.start()
+    except KeyboardInterrupt:
+        pass
 
 
