@@ -125,7 +125,7 @@ class Main:
         self.db_manager.disconnect()
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=5000)
+    uvicorn.run("app:app", host="0.0.0.0", port=5000, reload=True)
     
     scheduler = BlockingScheduler()
     scheduler.add_job(job_function, 'cron', hour=1)
