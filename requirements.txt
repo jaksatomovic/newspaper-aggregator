@@ -8,3 +8,4 @@ Alembic
 lxml_html_clean
 weasyprint
 apscheduler
+pytz
