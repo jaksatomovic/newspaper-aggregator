@@ -13,13 +13,12 @@ import pytz
 from dotenv import load_dotenv
 from database_manager import DatabaseManager
 from apscheduler.schedulers.blocking import BlockingScheduler
-from datetime import datetime
 
 today = datetime.date.today()
 
 
 # Get the current time in the UTC timezone
-utc_now = datetime.utcnow()
+utc_now = datetime.datetime.utcnow()
 
 # Convert UTC time to Croatian timezone
 croatian_timezone = pytz.timezone('Europe/Zagreb')
