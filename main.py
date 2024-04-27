@@ -8,21 +8,12 @@ import constants
 import notification
 import logging
 import signal
-import pytz
 
 from dotenv import load_dotenv
 from database_manager import DatabaseManager
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 today = datetime.date.today()
-
-
-# Get the current time in the UTC timezone
-utc_now = datetime.datetime.utcnow()
-
-# Convert UTC time to Croatian timezone
-croatian_timezone = pytz.timezone('Europe/Zagreb')
-croatian_now = utc_now.replace(tzinfo=pytz.utc).astimezone(croatian_timezone)
 
 def job_function():
     # Instantiate and run the main class
@@ -112,7 +103,7 @@ class Main:
 
         self.db_manager.connect()    
 
-        formatted_date = croatian_now.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+        formatted_date = today.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
 
         # Map PDF file data to file_data and EPUB file data to epub_file
         for file_name, file_data, content_type in file_data:
