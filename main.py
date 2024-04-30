@@ -13,8 +13,6 @@ from dotenv import load_dotenv
 from database_manager import DatabaseManager
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-today = datetime.date.today()
-
 def job_function():
     # Instantiate and run the main class
     main = Main().get_instance()
@@ -103,6 +101,7 @@ class Main:
 
         self.db_manager.connect()    
 
+        today = datetime.date.today()
         formatted_date = today.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
 
         # Map PDF file data to file_data and EPUB file data to epub_file
