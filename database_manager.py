@@ -207,21 +207,17 @@ class DatabaseManager:
         try:
             cursor = self._connection.cursor()
 
-            # Insert or update the newspaper
+            # Insert or update the q_publication
             insert_query = """
-                INSERT INTO newspaper 
-                (title, newspaper_date, file_name, file_data, file_data_content_type, epub_file, epub_file_content_type, journal_id)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO q_publication 
+                (title, newspaper_date, file_name, file_data, file_data_content_type, journal_id)
+                VALUES (%s, %s, %s, %s, %s, %s)
                 ON DUPLICATE KEY UPDATE
                 newspaper_date = VALUES(newspaper_date),
                 file_name = VALUES(file_name),
                 file_data_content_type = VALUES(file_data_content_type),
-                epub_file_content_type = VALUES(epub_file_content_type),
                 journal_id = VALUES(journal_id)
             """
-
-                    # id	title	newspaper_date	file_name	file_data	file_data_content_type	epub_file	epub_file_content_type	journal_id	
-
         
             cursor.execute(insert_query, (
                 newspaper['title'],
@@ -229,8 +225,6 @@ class DatabaseManager:
                 newspaper['file_name'],
                 newspaper['file_data'],
                 newspaper['file_data_content_type'],
-                newspaper['epub_file'],
-                newspaper['epub_file_content_type'],
                 newspaper['journal_id']
             ))
             self._connection.commit()

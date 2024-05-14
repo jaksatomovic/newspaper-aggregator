@@ -112,9 +112,7 @@ class Main:
                 'newspaper_date': formatted_date,
                 'file_name': file_name,
                 'file_data': file_data if content_type == 'application/pdf' else None,
-                'file_data_content_type': 'application/pdf' if content_type == 'application/pdf' else None,
-                'epub_file': file_data if content_type == 'application/epub+zip' else None,
-                'epub_file_content_type': 'application/epub+zip' if content_type == 'application/epub+zip' else None
+                'file_data_content_type': 'application/pdf' if content_type == 'application/pdf' else 'application/epub+zip'
             }
 
             self.db_manager.create_newspaper(newspaper)
