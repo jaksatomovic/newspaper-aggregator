@@ -23,29 +23,29 @@ def generate(db_manager):
     sql_result = db_manager.get_temporary_data()
     db_manager.disconnect()
 
-    # Dictionary to hold arrays based on journal_id
+    # Dictionary to hold arrays based on periodical_id
     result_dict = defaultdict(list)
 
     # Splitting the result set
     for row in sql_result:
-        result_dict[row['journal_id']].append(row)
+        result_dict[row['periodical_id']].append(row)
 
     # Converting defaultdict to regular dictionary
     result_dict = dict(result_dict)
 
-    # Accessing arrays with same journal_id
-    for journal_id, articles in result_dict.items():
-        print(f'Procesing articles for Journal ID: {journal_id}')
+    # Accessing arrays with same periodical_id
+    for periodical_id, articles in result_dict.items():
+        print(f'Procesing articles for Periodical ID: {periodical_id}')
 
     # Process each CSV file
     # for csv_file in csv_files:
         # print("Processing CSV file:", csv_file)
         
         db_manager.connect()
-        sql_name_result = db_manager.get_journal_name(journal_id)
+        sql_name_result = db_manager.get_periodical_name(periodical_id)
         db_manager.disconnect()
 
-        newspaper_title = sql_name_result[0]['journal_name']
+        newspaper_title = sql_name_result[0]['periodical_name']
 
         print(newspaper_title)
 
@@ -199,7 +199,7 @@ def generate(db_manager):
 
 
         # create epub file
-        epub.write_epub(constants.build_folder_path + str(journal_id) + '.epub', book, {})
+        epub.write_epub(constants.build_folder_path + str(periodical_id) + '.epub', book, {})
 
         # create pdf file
-        pdf_converter.epub_to_pdf(constants.build_folder_path + str(journal_id) + '.epub', constants.build_folder_path + str(journal_id) + '.pdf')
+        pdf_converter.epub_to_pdf(constants.build_folder_path + str(periodical_id) + '.epub', constants.build_folder_path + str(periodical_id) + '.pdf')
