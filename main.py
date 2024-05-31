@@ -59,7 +59,7 @@ class Main:
         print("Main class is running")
 
         self.db_manager.connect()
-        journals = self.db_manager.get_journals()
+        journals = self.db_manager.get_periodicals()
         self.db_manager.disconnect()
         
         for journal in journals:
@@ -106,16 +106,16 @@ class Main:
 
         # Map PDF file data to file_data and EPUB file data to epub_file
         for file_name, file_data, content_type in file_data:
-            newspaper = {
-                'journal_id': int(file_name.split(".")[0]),
+            publication = {
+                'periodical_id': int(file_name.split(".")[0]),
                 'title': None,
-                'newspaper_date': formatted_date,
+                'publication_date': formatted_date,
                 'file_name': file_name,
-                'file_data': file_data if content_type == 'application/pdf' else None,
+                'file_data': file_data,
                 'file_data_content_type': 'application/pdf' if content_type == 'application/pdf' else 'application/epub+zip'
             }
 
-            self.db_manager.create_newspaper(newspaper)
+            self.db_manager.create_publication(publication)
 
         self.db_manager.disconnect()
 
