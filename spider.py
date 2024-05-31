@@ -35,23 +35,23 @@ def check_empty(article_urls):
     else:
         return False
 
-def get_news(journal, db_manager):
+def get_news(periodical, db_manager):
 
-    journal_id = journal['journal_id']
-    journal_name = journal['journal_name']
-    journal_image = journal['image']
-    country = journal['country']
-    site_url = journal['site_url']
-    rss_url = journal['rss_url']
-    category_id = journal['category_id']
-    language = journal['language']
+    periodical_id = periodical['periodical_id']
+    periodical_name = periodical['periodical_name']
+    periodical_image = periodical['image']
+    country = periodical['country']
+    site_url = periodical['site_url']
+    rss_url = periodical['rss_url']
+    category_id = periodical['category_id']
+    language = periodical['language']
 
     # Check if rss_url is not None or an empty string
     if not rss_url:
-        print("RSS URL is null or empty for journal:", journal_name)
+        print("RSS URL is null or empty for periodical:", periodical_name)
         return
     
-    brand = journal_name.lower().strip().replace(" ", "")
+    brand = periodical_name.lower().strip().replace(" ", "")
 
     feed = feedparser.parse(rss_url)
 
@@ -77,7 +77,7 @@ def get_news(journal, db_manager):
     #     csv_writer = csv.writer(csvfile)
         
     #     # Write header row
-    #     csv_writer.writerow(['journal_id', 'category_id', 'title', 'content', 'image'])
+    #     csv_writer.writerow(['periodical_id', 'category_id', 'title', 'content', 'image'])
 
     articles = [newspaper.Article(url=u, language=language, config=config) for u in article_urls]
 
@@ -94,16 +94,16 @@ def get_news(journal, db_manager):
         top_image = article.top_image if article.top_image else ''
 
         # Write data to CSV
-        # csv_writer.writerow([journal_id, category_id, title, re.sub(r'\s+', ' ', content), top_image])
+        # csv_writer.writerow([periodical_id, category_id, title, re.sub(r'\s+', ' ', content), top_image])
 
-        insert_query = """ INSERT INTO temp_data (journal_id, category_id, title, content, image_url) VALUES (%s, %s, %s, %s, %s) """
+        insert_query = """ INSERT INTO temp_data (periodical_id, category_id, title, content, image_url) VALUES (%s, %s, %s, %s, %s) """
         # Define the values to be inserted
-        values = (journal_id, category_id, title, re.sub(r'\s+', ' ', content), top_image)
+        values = (periodical_id, category_id, title, re.sub(r'\s+', ' ', content), top_image)
 
         db_manager.connect()
         db_manager.execute_query(insert_query, values)
         db_manager.disconnect()
 
-    print("Data for '" + journal_name + "' has been written into temporary table.")
+    print("Data for '" + periodical_name + "' has been written into temporary table.")
 
 
