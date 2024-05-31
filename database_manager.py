@@ -42,17 +42,17 @@ class DatabaseManager:
         cursor = self._connection.cursor()
         
         try:
-            # Check if the newspapers table exists
-            cursor.execute("SHOW TABLES LIKE 'newspaper'")
-            newspaper_table_exists = cursor.fetchone()
+            # Check if the publications table exists
+            cursor.execute("SHOW TABLES LIKE 'publication'")
+            publication_table_exists = cursor.fetchone()
 
-            # Check if the journals table exists
-            cursor.execute("SHOW TABLES LIKE 'journal'")
-            journal_table_exists = cursor.fetchone()
+            # Check if the periodicals table exists
+            cursor.execute("SHOW TABLES LIKE 'periodical'")
+            periodical_table_exists = cursor.fetchone()
 
             # Check if the categories table exists
             cursor.execute("SHOW TABLES LIKE 'category'")
-            journal_table_exists = cursor.fetchone()
+            category_table_exists = cursor.fetchone()
 
             # Check if the temp_data table exists
             cursor.execute("SHOW TABLES LIKE 'temp_data'")
@@ -61,7 +61,7 @@ class DatabaseManager:
             if not temp_data_table_exists:
                 cursor.execute('''
                     CREATE TABLE IF NOT EXISTS temp_data (
-                        journal_id INTEGER,
+                        periodical_id INTEGER,
                         category_id INTEGER,
                         title TEXT,
                         content TEXT,
@@ -69,7 +69,7 @@ class DatabaseManager:
                     )
                 ''')
 
-            if not newspaper_table_exists or not journal_table_exists or not journal_table_exists:
+            if not publication_table_exists or not periodical_table_exists or not category_table_exists:
                 return False
             
             self._connection.commit()
@@ -106,14 +106,14 @@ class DatabaseManager:
         finally:
             cursor.close()
     
-    def get_journals(self):
+    def get_periodicals(self):
         if self._connection is None:
             raise Exception("Database connection is not established")
 
         cursor = self._connection.cursor(dictionary=True)
 
         try:
-            cursor.execute("SELECT j.id AS journal_id, j.name AS journal_name, j.site_url, j.language, j.country, j.image, j.image_content_type, f.rss_url, f.category_id FROM journal j LEFT JOIN feed f ON j.id = f.journal_id")
+            cursor.execute("SELECT j.id AS periodical_id, j.name AS periodical_name, j.site_url, j.language, j.country, j.image, j.image_content_type, f.rss_url, f.category_id FROM peridical j LEFT JOIN feed f ON j.id = f.periodical_id")
             return cursor.fetchall()
         except mysql.connector.Error as e:
             print(f"Error occurred while executing query: {e}")
@@ -128,7 +128,7 @@ class DatabaseManager:
         cursor = self._connection.cursor(dictionary=True)
 
         try:
-            cursor.execute("SELECT journal_id, category_id, title, content, image_url FROM temp_data")
+            cursor.execute("SELECT periodical_id, category_id, title, content, image_url FROM temp_data")
             return cursor.fetchall()
         except mysql.connector.Error as e:
             print(f"Error occurred while executing query: {e}")
@@ -136,14 +136,14 @@ class DatabaseManager:
         finally:
             cursor.close()
 
-    def get_journal_name(self, journal_id):
+    def get_periodical_name(self, periodical_id):
         if self._connection is None:
             raise Exception("Database connection is not established")
 
         cursor = self._connection.cursor(dictionary=True)
 
         try:
-            cursor.execute(''' SELECT j.name AS journal_name FROM journal j WHERE j.id =  ''' + str(journal_id))
+            cursor.execute(''' SELECT j.name AS periodical_name FROM periodical j WHERE j.id =  ''' + str(periodical_id))
             return cursor.fetchall()
         except mysql.connector.Error as e:
             print(f"Error occurred while executing query: {e}")
@@ -151,81 +151,81 @@ class DatabaseManager:
         finally:
             cursor.close()
 
-    def journal_exists(self, journal_name):
+    def periodical_exists(self, periodical_name):
         if self._connection is None:
             raise Exception("Database connection is not established")
         
         try:
             cursor = self._connection.cursor()
 
-            query = "SELECT COUNT(*) FROM journals WHERE name = %s"
-            cursor.execute(query, (journal_name,))
+            query = "SELECT COUNT(*) FROM periodical WHERE name = %s"
+            cursor.execute(query, (periodical_name,))
             count = cursor.fetchone()[0]
             
             return count > 0
         except mysql.connector.Error as e:
-            print(f"Error occurred while inserting newspapaer: {e}")
+            print(f"Error occurred while inserting periodical: {e}")
             self._connection.rollback()
         finally:
             cursor.close()
 
-    def insert_journal(self, newspaper):
+    def insert_periodical(self, publication):
         if self._connection is None:
             raise Exception("Database connection is not established")
 
-        if self.journal_exists(newspaper['name']):
-            print("Newspaper " + newspaper['name'] + " already exists in the database.")
+        if self.periodical_exists(publication['name']):
+            print("Publication " + publication['name'] + " already exists in the database.")
             return
 
         try:
             cursor = self._connection.cursor()
 
             insert_query = """
-                INSERT INTO journals (name, site_url, country, rss_url, language)
+                INSERT INTO periodical (name, site_url, country, rss_url, language)
                 VALUES (%s, %s, %s, %s, %s)
             """       
 
             cursor.execute(insert_query, (
-                newspaper['name'],
-                newspaper['site_url'],
-                newspaper['country'],
-                newspaper['rss_url'],
-                newspaper['language']
+                publication['name'],
+                publication['site_url'],
+                publication['country'],
+                publication['rss_url'],
+                publication['language']
             ))
             self._connection.commit()
-            print("Journal inserted successfully.")
+            print("Periodical inserted successfully.")
         except mysql.connector.Error as e:
-            print(f"Error occurred while inserting journal: {e}")
+            print(f"Error occurred while inserting periodical: {e}")
             self._connection.rollback()
         finally:
             cursor.close()
 
-    def create_newspaper(self, newspaper):
+    def create_publication(self, publication):
         if self._connection is None:
             raise Exception("Database connection is not established")
 
         try:
             cursor = self._connection.cursor()
 
-            # Insert or update the q_publication
+            # Insert or update the publication
             insert_query = """
-                INSERT INTO q_publication 
-                (title, newspaper_date, file_name, file_data, file_data_content_type, journal_id)
+                INSERT INTO publication 
+                (title, publication_date, file_name, file_data, file_data_content_type, periodical_id)
                 VALUES (%s, %s, %s, %s, %s, %s)
                 ON DUPLICATE KEY UPDATE
-                newspaper_date = VALUES(newspaper_date),
+                publication_date = VALUES(publication_date),
                 file_name = VALUES(file_name),
                 file_data_content_type = VALUES(file_data_content_type),
-                journal_id = VALUES(journal_id)
+                periodical_id = VALUES(periodical_id)
             """
         
             cursor.execute(insert_query, (
-                newspaper['title'],
-                newspaper['newspaper_date'],
-                newspaper['file_name'],
-                newspaper['file_data'],
-                newspaper['file_data_content_type'],
-                newspaper['journal_id']
+                publication['title'],
+                publication['publication_date'],
+                publication['file_name'],
+                publication['file_data'],
+                publication['file_data_content_type'],
+                publication['periodical_id']
             ))
             self._connection.commit()
         except mysql.connector.Error as e:
