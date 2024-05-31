@@ -59,12 +59,12 @@ class Main:
         print("Main class is running")
 
         self.db_manager.connect()
-        journals = self.db_manager.get_periodicals()
+        periodicals = self.db_manager.get_periodicals()
         self.db_manager.disconnect()
         
-        for journal in journals:
+        for periodical in periodicals:
             # Call spider.get_news with the fetched data  
-            spider.get_news(journal, self.db_manager)          
+            spider.get_news(periodical, self.db_manager)          
 
         self.process_files()
          
