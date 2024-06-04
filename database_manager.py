@@ -113,7 +113,7 @@ class DatabaseManager:
         cursor = self._connection.cursor(dictionary=True)
 
         try:
-            cursor.execute("SELECT j.id AS periodical_id, j.name AS periodical_name, j.site_url, j.language, j.country, j.image, j.image_content_type, f.rss_url, f.category_id FROM peridical j LEFT JOIN periodical_source f ON j.id = f.periodical_id")
+            cursor.execute("SELECT j.id AS periodical_id, j.name AS periodical_name, j.site_url, j.language, j.country, j.image, j.image_content_type, f.rss_url, f.category_id FROM periodical j LEFT JOIN periodical_source f ON j.id = f.periodical_id")
             return cursor.fetchall()
         except mysql.connector.Error as e:
             print(f"Error occurred while executing query: {e}")
