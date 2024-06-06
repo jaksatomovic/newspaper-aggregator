@@ -169,43 +169,13 @@ class DatabaseManager:
         finally:
             cursor.close()
 
-    def insert_periodical(self, publication):
-        if self._connection is None:
-            raise Exception("Database connection is not established")
-
-        if self.periodical_exists(publication['name']):
-            print("Publication " + publication['name'] + " already exists in the database.")
-            return
-
-        try:
-            cursor = self._connection.cursor()
-
-            insert_query = """
-                INSERT INTO periodical (name, site_url, country, rss_url, language)
-                VALUES (%s, %s, %s, %s, %s)
-            """       
-
-            cursor.execute(insert_query, (
-                publication['name'],
-                publication['site_url'],
-                publication['country'],
-                publication['rss_url'],
-                publication['language']
-            ))
-            self._connection.commit()
-            print("Periodical inserted successfully.")
-        except mysql.connector.Error as e:
-            print(f"Error occurred while inserting periodical: {e}")
-            self._connection.rollback()
-        finally:
-            cursor.close()
-
     def create_publication(self, publication):
         if self._connection is None:
             raise Exception("Database connection is not established")
 
         try:
             cursor = self._connection.cursor()
+            cursor.execute("LOCK TABLES publication WRITE")
 
             # Insert or update the publication
             insert_query = """
@@ -227,7 +197,8 @@ class DatabaseManager:
                 publication['file_data_content_type'],
                 publication['periodical_id']
             ))
-            self._connection.commit()
+            self._connection.commit
+            cursor.execute("UNLOCK TABLES")
         except mysql.connector.Error as e:
             print(f"Error occurred while inserting newspapaer: {e}")
             self._connection.rollback()
