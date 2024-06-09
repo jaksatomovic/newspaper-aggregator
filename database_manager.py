@@ -180,8 +180,8 @@ class DatabaseManager:
             # Insert or update the publication
             insert_query = """
                 INSERT INTO publication 
-                (title, publication_date, file_name, file_data, file_data_content_type, periodical_id)
-                VALUES (%s, %s, %s, %s, %s, %s)
+                (publication_date, file_name, file_data, file_data_content_type, periodical_id)
+                VALUES (%s, %s, %s, %s, %s)
                 ON DUPLICATE KEY UPDATE
                 publication_date = VALUES(publication_date),
                 file_name = VALUES(file_name),
@@ -190,7 +190,6 @@ class DatabaseManager:
             """
         
             cursor.execute(insert_query, (
-                publication['title'],
                 publication['publication_date'],
                 publication['file_name'],
                 publication['file_data'],
@@ -200,7 +199,7 @@ class DatabaseManager:
             self._connection.commit
             cursor.execute("UNLOCK TABLES")
         except mysql.connector.Error as e:
-            print(f"Error occurred while inserting newspapaer: {e}")
+            print(f"Error occurred while inserting publication: {e}")
             self._connection.rollback()
         finally:
             cursor.close()

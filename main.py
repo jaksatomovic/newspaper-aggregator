@@ -108,7 +108,6 @@ class Main:
         for file_name, file_data, content_type in file_data:
             publication = {
                 'periodical_id': int(file_name.split(".")[0]),
-                'title': None,
                 'publication_date': formatted_date,
                 'file_name': file_name,
                 'file_data': file_data,
@@ -120,16 +119,19 @@ class Main:
         self.db_manager.disconnect()
 
 if __name__ == "__main__":
+
+    main = Main().get_instance()
+    main.run()
     
-    scheduler = BlockingScheduler()
-    scheduler.add_job(job_function, 'cron', hour=3)
+    # scheduler = BlockingScheduler()
+    # scheduler.add_job(job_function, 'cron', hour=3)
     
-    # Register signal handler for termination signal (SIGTERM)
-    signal.signal(signal.SIGTERM, stop_scheduler)
+    # # Register signal handler for termination signal (SIGTERM)
+    # signal.signal(signal.SIGTERM, stop_scheduler)
     
-    try:
-        scheduler.start()
-    except KeyboardInterrupt:
-        pass
+    # try:
+    #     scheduler.start()
+    # except KeyboardInterrupt:
+    #     pass
 
 
